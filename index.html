@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tahu Lontong - UMKM Makanan Tradisional</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Variabel CSS dengan tema tahu lontong */
+        :root {
+            --primary-color: #8B4513; /* Coklat kuah kacang */
+            --secondary-color: #D2691E; /* Coklat muda */
+            --accent-color: #FFD700; /* Kuning lontong */
+            --dark-color: #5D4037; /* Coklat tua */
+            --light-color: #FFF8E1; /* Krem muda */
+            --text-color: #4E342E; /* Coklat teks */
+            --text-light: #8D6E63; /* Coklat medium */
+            --text-lighter: #A1887F; /* Coklat muda */
+            --white: #FFFFFF;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --gradient-light: linear-gradient(135deg, rgba(139, 69, 19, 0.1), rgba(210, 105, 30, 0.1));
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--light-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-logo {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--light-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-progress {
+            width: 200px;
+            height: 4px;
+            background: var(--light-color);
+            border-radius: 2px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: var(--gradient);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Global Styles */
+        body {
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-color);
+            overflow-x: hidden;
+            cursor: none;
+            position: relative;
+        }
+
+        /* Container untuk masking area */
+        .content-mask {
+            position: relative;
+            z-index: 3;
+            background: inherit;
+        }
+
+        /* Garis batas bawah */
+        .content-boundary {
+            position: relative;
+        }
+
+        .content-boundary::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--primary-color) 20%, 
+                var(--accent-color) 50%, 
+                var(--primary-color) 80%, 
+                transparent 100%);
+            z-index: 4;
+            opacity: 0.6;
+        }
+
+        /* Text yang aman dari nabrak background - WARNA NATURAL */
+        .safe-text {
+            position: relative;
+            z-index: 4;
+            color: var(--text-color);
+            text-shadow: 
+                0.5px 0.5px 1px rgba(255, 248, 225, 0.8),
+                -0.5px -0.5px 1px rgba(255, 248, 225, 0.8);
+        }
+
+        .safe-text-light {
+            position: relative;
+            z-index: 4;
+            color: var(--text-light);
+            text-shadow: 
+                0.5px 0.5px 1px rgba(255, 248, 225, 0.8),
+                -0.5px -0.5px 1px rgba(255, 248, 225, 0.8);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        section {
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .section-title p {
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--gradient);
+            color: var(--white);
+            border: none;
+            border-radius: 30px;
+            cursor: none;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* ========== CUSTOM CURSOR & MOUSE EFFECTS ========== */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+        }
+
+        .cursor-follower {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transition: all 0.15s ease;
+            transition-property: width, height, border;
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9997;
+            opacity: 0;
+        }
+
+        /* ========== ANIMASI BACKGROUND ELEGAN ========== */
+        .animated-background {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* Background gradient utama dengan animasi halus */
+        .background-gradient {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(139, 69, 19, 0.05) 0%, 
+                rgba(210, 105, 30, 0.08) 25%, 
+                rgba(255, 215, 0, 0.05) 50%, 
+                rgba(210, 105, 30, 0.08) 75%, 
+                rgba(139, 69, 19, 0.05) 100%);
+            animation: gradientShift 15s ease infinite;
+            z-index: 1;
+        }
+
+        /* Pola tekstur halus */
+        .background-texture {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(139, 69, 19, 0.03) 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, rgba(210, 105, 30, 0.03) 2px, transparent 2px),
+                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.02) 1px, transparent 1px);
+            background-size: 100px 100px, 150px 150px, 200px 200px;
+            animation: textureMove 20s linear infinite;
+            z-index: 2;
+        }
+
+        /* Gelombang animasi halus */
+        .wave-animation {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(139, 69, 19, 0.02) 25%, 
+                rgba(210, 105, 30, 0.03) 50%, 
+                rgba(139, 69, 19, 0.02) 75%, 
+                transparent 100%);
+            animation: waveFlow 25s linear infinite;
+            z-index: 3;
+        }
+
+        /* Partikel halus yang mengambang */
+        .floating-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, 
+                rgba(139, 69, 19, 0.1) 0%, 
+                rgba(210, 105, 30, 0.05) 50%, 
+                transparent 100%);
+            animation: floatParticle 20s ease-in-out infinite;
+            z-index: 4;
+        }
+
+        /* Cahaya lembut yang bergerak */
+        .soft-light {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, 
+                rgba(255, 215, 0, 0.08) 0%, 
+                rgba(255, 215, 0, 0.02) 50%, 
+                transparent 100%);
+            animation: softGlow 12s ease-in-out infinite;
+            z-index: 5;
+        }
+
+        /* ========== ANIMATION KEYFRAMES BACKGROUND BARU ========== */
+        @keyframes gradientShift {
+            0%, 100% {
+                background: linear-gradient(135deg, 
+                    rgba(139, 69, 19, 0.05) 0%, 
+                    rgba(210, 105, 30, 0.08) 25%, 
+                    rgba(255, 215, 0, 0.05) 50%, 
+                    rgba(210, 105, 30, 0.08) 75%, 
+                    rgba(139, 69, 19, 0.05) 100%);
+            }
+            25% {
+                background: linear-gradient(135deg, 
+                    rgba(210, 105, 30, 0.08) 0%, 
+                    rgba(255, 215, 0, 0.05) 25%, 
+                    rgba(139, 69, 19, 0.05) 50%, 
+                    rgba(255, 215, 0, 0.05) 75%, 
+                    rgba(210, 105, 30, 0.08) 100%);
+            }
+            50% {
+                background: linear-gradient(135deg, 
+                    rgba(255, 215, 0, 0.05) 0%, 
+                    rgba(139, 69, 19, 0.05) 25%, 
+                    rgba(210, 105, 30, 0.08) 50%, 
+                    rgba(139, 69, 19, 0.05) 75%, 
+                    rgba(255, 215, 0, 0.05) 100%);
+            }
+            75% {
+                background: linear-gradient(135deg, 
+                    rgba(139, 69, 19, 0.05) 0%, 
+                    rgba(255, 215, 0, 0.05) 25%, 
+                    rgba(139, 69, 19, 0.05) 50%, 
+                    rgba(210, 105, 30, 0.08) 75%, 
+                    rgba(255, 215, 0, 0.05) 100%);
+            }
+        }
+
+        @keyframes textureMove {
+            0% {
+                background-position: 0 0, 0 0, 0 0;
+            }
+            100% {
+                background-position: 100px 100px, 150px 150px, 200px 200px;
+            }
+        }
+
+        @keyframes waveFlow {
+            0% {
+                transform: translateX(-50%) skewX(-5deg);
+            }
+            100% {
+                transform: translateX(0%) skewX(-5deg);
+            }
+        }
+
+        @keyframes floatParticle {
+            0%, 100% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0.3;
+            }
+            25% {
+                transform: translateY(-20px) translateX(10px) scale(1.1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translateY(-10px) translateX(20px) scale(0.9);
+                opacity: 0.7;
+            }
+            75% {
+                transform: translateY(-15px) translateX(-10px) scale(1.05);
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes softGlow {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes ripple {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+
+        /* Header Styles */
+        header {
+            background-color: rgba(255, 248, 225, 0.95);
+            box-shadow: var(--shadow);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+            cursor: none;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            cursor: none;
+        }
+
+        .logo-icon {
+            margin-right: 10px;
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            padding: 5px 0;
+            cursor: none;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 21px;
+        }
+
+        .hamburger span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: var(--text-color);
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(91, 64, 55, 0.7), rgba(91, 64, 55, 0.7)), url('Gambar WhatsApp 2025-10-22 pukul 15.34.07_f61cd6da.jpg') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            margin-top: 70px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            line-height: 1.8;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        /* About Section */
+        .about {
+            background-color: var(--white);
+            position: relative;
+            z-index: 2;
+        }
+
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .about-text {
+            flex: 1;
+        }
+
+        .about-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+        }
+
+        .about-text p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+            color: var(--text-light);
+        }
+
+        .about-image {
+            flex: 1;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 5px solid var(--light-color);
+            transition: var(--transition);
+            cursor: none;
+        }
+
+        .about-image:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .about-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .about-image:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Menu Section */
+        .menu {
+            background-color: var(--light-color);
+            position: relative;
+            z-index: 2;
+        }
+
+        .menu-slider {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            cursor: none;
+        }
+
+        .menu-slides {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .menu-slide {
+            min-width: 100%;
+            position: relative;
+        }
+
+        .menu-slide img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .menu-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 30px;
+        }
+
+        .menu-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .menu-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .slider-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--text-lighter);
+            cursor: none;
+            transition: var(--transition);
+        }
+
+        .slider-dot.active {
+            background-color: var(--primary-color);
+            transform: scale(1.2);
+        }
+
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            z-index: 10;
+            color: var(--text-color);
+        }
+
+        .slider-arrow:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .slider-arrow.prev {
+            left: 20px;
+        }
+
+        .slider-arrow.next {
+            right: 20px;
+        }
+
+        /* Contact Section */
+        .contact {
+            background-color: var(--light-color);
+            position: relative;
+            z-index: 2;
+        }
+
+        .contact-content {
+            display: flex;
+            gap: 50px;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+        }
+
+        .contact-info p {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            color: var(--text-light);
+        }
+
+        .contact-info i {
+            margin-right: 10px;
+            color: var(--primary-color);
+            width: 20px;
+            text-align: center;
+        }
+
+        .contact-form {
+            flex: 1;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            cursor: none;
+            background: var(--white);
+            color: var(--text-color);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+        }
+
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        /* Footer - DIUBAH WARNA TEXT MENJADI GELAP */
+        footer {
+            background: linear-gradient(135deg, #F5F5F5, #EEEEEE); /* Background terang */
+            color: var(--text-color); /* Text gelap */
+            padding: 50px 0 20px;
+            position: relative;
+            z-index: 2;
+            border-top: 3px solid var(--primary-color);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-column {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--primary-color); /* Warna coklat */
+        }
+
+        .footer-column p,
+        .footer-column a {
+            color: var(--text-light); /* Coklat medium */
+            margin-bottom: 10px;
+            display: block;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: none;
+        }
+
+        .footer-column a:hover {
+            color: var(--primary-color);
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(139, 69, 19, 0.1); /* Coklat transparan */
+            border-radius: 50%;
+            transition: var(--transition);
+            cursor: none;
+            color: var(--primary-color); /* Warna coklat */
+        }
+
+        .social-links a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+            color: var(--white);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(139, 69, 19, 0.2); /* Garis coklat transparan */
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* ========== RESPONSIVE STYLES ========== */
+        
+        @media (max-width: 768px) {
+            body {
+                cursor: auto;
+            }
+            
+            .custom-cursor,
+            .cursor-follower,
+            .cursor-trail {
+                display: none;
+            }
+            
+            .btn, .nav-links a, .social-links a {
+                cursor: pointer;
+            }
+            
+            .navbar {
+                padding: 15px 0;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background-color: var(--white);
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                padding-top: 50px;
+                transition: var(--transition);
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                left: 0;
+            }
+
+            .nav-links li {
+                margin: 15px 0;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hamburger.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .hamburger.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -6px);
+            }
+
+            .hero {
+                height: 80vh;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .section-title p {
+                font-size: 1rem;
+            }
+
+            .menu-slide img {
+                height: 300px;
+            }
+
+            .slider-arrow {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
+            .menu-content {
+                padding: 20px;
+            }
+            
+            .menu-content h3 {
+                font-size: 1.5rem;
+            }
+            
+            .menu-content p {
+                font-size: 0.9rem;
+            }
+            
+            .price {
+                font-size: 1.3rem;
+            }
+            
+            .about-text h3 {
+                font-size: 1.6rem;
+            }
+            
+            .contact-info h3,
+            .contact-form h3 {
+                font-size: 1.6rem;
+            }
+            
+            .footer-content {
+                gap: 20px;
+            }
+            
+            .footer-column {
+                min-width: 200px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero {
+                height: 70vh;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+                margin-bottom: 15px;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+                margin-bottom: 20px;
+            }
+            
+            .btn {
+                padding: 10px 25px;
+                font-size: 0.9rem;
+            }
+            
+            section {
+                padding: 60px 0;
+            }
+            
+            .section-title {
+                margin-bottom: 30px;
+            }
+            
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+            
+            .section-title h2::after {
+                width: 60px;
+                height: 2px;
+            }
+            
+            .about-content,
+            .contact-content {
+                gap: 30px;
+            }
+            
+            .about-text h3 {
+                font-size: 1.4rem;
+            }
+            
+            .about-text p {
+                font-size: 0.9rem;
+            }
+            
+            .menu-slider {
+                border-radius: 10px;
+            }
+            
+            .menu-slide img {
+                height: 250px;
+            }
+            
+            .menu-content {
+                padding: 15px;
+            }
+            
+            .menu-content h3 {
+                font-size: 1.3rem;
+            }
+            
+            .menu-content p {
+                font-size: 0.85rem;
+                margin-bottom: 10px;
+            }
+            
+            .price {
+                font-size: 1.2rem;
+            }
+            
+            .slider-arrow {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+            
+            .slider-arrow.prev {
+                left: 10px;
+            }
+            
+            .slider-arrow.next {
+                right: 10px;
+            }
+            
+            .contact-info h3,
+            .contact-form h3 {
+                font-size: 1.4rem;
+            }
+            
+            .form-group input,
+            .form-group textarea {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .form-group textarea {
+                height: 120px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .footer-column {
+                min-width: 100%;
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+            
+            .copyright {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">
+            <i class="fas fa-utensils"></i>
+        </div>
+        <div class="loading-text">Memuat Tahu Lontong Autentik...</div>
+        <div class="loading-spinner"></div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Elegant Background Animations -->
+    <div class="animated-background" id="animatedBackground"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-utensils logo-icon"></i>
+                    <span>Tahu Lontong</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#home">Beranda</a></li>
+                    <li><a href="#about">Tentang</a></li>
+                    <li><a href="#menu">Menu</a></li>
+                    <li><a href="#contact">Kontak</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="text-reveal">Tahu Lontong Autentik</h1>
+                <p>Rasa tradisional yang autentik dengan cita rasa warisan nenek moyang. Setiap suapan menghadirkan kenangan akan kelezatan kuliner Indonesia yang tak terlupakan.</p>
+                <a href="#menu" class="btn">Lihat Menu</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section dengan GARIS BATAS -->
+    <section id="about" class="about content-mask content-boundary">
+        <div class="container">
+            <div class="section-title">
+                <h2>Tentang Warung Kami</h2>
+                <p class="safe-text-light">Warung Tahu Lontong dengan cita rasa autentik yang telah melegenda</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Keistimewaan Tahu Lontong Kami</h3>
+                    <p class="safe-text-light">Kami menghadirkan tahu lontong yang dibuat dengan resep turun-temurun. Warung ini mempertahankan cita rasa asli dengan sentuhan tradisional dalam penyajian.</p>
+                    <p class="safe-text-light">Dari tahu yang lembut, lontong yang pulen, hingga kuah kacang yang kental dan gurih, semuanya telah disiapkan dengan penuh perhatian dan cinta.</p>
+                    <p class="safe-text-light">Warung kami meyakini bahwa makanan tidak hanya sekadar mengenyangkan, tetapi juga harus memberikan pengalaman kuliner yang memuaskan dan meninggalkan kesan mendalam.</p>
+                    <a href="#contact" class="btn">Kunjungi Warung Kami</a>
+                </div>
+                <div class="about-image">
+                    <img src="Gambar WhatsApp 2025-10-22 pukul 15.34.07_f61cd6da.jpg" alt="Warung Tahu Lontong">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Section dengan GARIS BATAS -->
+    <section id="menu" class="menu content-mask content-boundary">
+        <div class="container">
+            <div class="section-title">
+                <h2>Menu Tahu Lontong</h2>
+                <p class="safe-text-light">Pilihan menu tahu lontong dengan berbagai variasi yang menggugah selera</p>
+            </div>
+            
+            <div class="menu-slider">
+                <button class="slider-arrow prev">&lt;</button>
+                <div class="menu-slides">
+                    <!-- Slide 1 -->
+                    <div class="menu-slide">
+                        <img src="g1.jpg" alt="Tahu Lontong Original">
+                        <div class="menu-content">
+                            <h3>Tahu Lontong Original</h3>
+                            <p>Perpaduan sempurna antara tahu goreng, lontong, dan kuah kacang kental dengan bumbu rahasia warisan keluarga.</p>
+                            <div class="price">Rp 7.000</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 2 -->
+                    <div class="menu-slide">
+                        <img src="g2.jpg" alt="Tahu Lontong Pedas">
+                        <div class="menu-content">
+                           
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 3 -->
+                    <div class="menu-slide">
+                        <img src="g3.jpg" alt="Tahu Lontong Komplit">
+                        <div class="menu-content">
+                           >
+                        </div>
+                    </div>
+                </div>
+                <button class="slider-arrow next">&gt;</button>
+                
+                <div class="slider-nav">
+                    <span class="slider-dot active" data-index="0"></span>
+                    <span class="slider-dot" data-index="1"></span>
+                    <span class="slider-dot" data-index="2"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section dengan GARIS BATAS -->
+    <section id="contact" class="contact content-mask content-boundary">
+        <div class="container">
+            <div class="section-title">
+                <h2>Hubungi Kami</h2>
+                <p class="safe-text-light">Silakan hubungi jika berminat untuk pemesanan atau informasi lebih lanjut</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Informasi Warung</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> JL. Nusa Indah Gg.7</p>
+                    <p><i class="fas fa-phone"></i> +62 81234567</p>
+                    <p><i class="fas fa-envelope"></i> info@tahulontong.com</p>
+                    <p><i class="fas fa-clock"></i> Buka Setiap Hari: 08.00 - 18.00 WIB</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <h3>Kirim Pesan</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Nama Lengkap</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subjek</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Pesan</label>
+                            <textarea id="message" name="message" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Kirim Pesan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer dengan GARIS BATAS - WARNA TEXT DIUBAH MENJADI GELAP -->
+    <footer class="content-mask content-boundary">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Tahu Lontong</h3>
+                    <p>Menghadirkan kelezatan tahu lontong tradisional dengan cita rasa autentik dan bahan-bahan berkualitas.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Menu Cepat</h3>
+                    <a href="#home">Beranda</a>
+                    <a href="#about">Tentang Kami</a>
+                    <a href="#menu">Menu</a>
+                    <a href="#contact">Kontak</a>
+                </div>
+                <div class="footer-column">
+                    <h3>Kontak</h3>
+                    <p>Jl. Nusa Indah Gg.7</p>
+                    <p>+62 812-3456-7890</p>
+                    <p>info@tahulontong.com</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Tahu Lontong. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Loading Screen Functionality
+        const loadingScreen = document.getElementById('loadingScreen');
+        const progressBar = document.getElementById('progressBar');
+        
+        function simulateLoading() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    // Hide loading screen after completion
+                    setTimeout(() => {
+                        loadingScreen.classList.add('hidden');
+                        // Start all animations after loading
+                        startAllAnimations();
+                    }, 500);
+                }
+                progressBar.style.width = progress + '%';
+            }, 200);
+        }
+
+        // Start loading when page loads
+        window.addEventListener('load', simulateLoading);
+
+        // Custom Cursor
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorFollower = document.querySelector('.cursor-follower');
+        let mouseX = 0, mouseY = 0;
+        let followerX = 0, followerY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Main cursor
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+            
+            // Create trail effect
+            createCursorTrail(mouseX, mouseY);
+        });
+
+        function animateCursor() {
+            // Smooth follow for cursor follower
+            followerX += (mouseX - followerX) * 0.1;
+            followerY += (mouseY - followerY) * 0.1;
+            
+            cursorFollower.style.left = followerX + 'px';
+            cursorFollower.style.top = followerY + 'px';
+            
+            requestAnimationFrame(animateCursor);
+        }
+
+        animateCursor();
+
+        // Cursor trail effect
+        function createCursorTrail(x, y) {
+            const trail = document.createElement('div');
+            trail.className = 'cursor-trail';
+            trail.style.left = x + 'px';
+            trail.style.top = y + 'px';
+            document.body.appendChild(trail);
+
+            // Animate trail
+            setTimeout(() => {
+                trail.style.opacity = '0.6';
+                trail.style.transform = 'scale(1.5)';
+            }, 10);
+
+            setTimeout(() => {
+                trail.style.opacity = '0';
+                trail.style.transform = 'scale(0.5)';
+                setTimeout(() => trail.remove(), 300);
+            }, 200);
+        }
+
+        // Cursor hover effects
+        document.querySelectorAll('a, button, .about-image').forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'scale(1.5)';
+                cursorFollower.style.transform = 'scale(1.2)';
+                cursorFollower.style.borderWidth = '3px';
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'scale(1)';
+                cursorFollower.style.transform = 'scale(1)';
+                cursorFollower.style.borderWidth = '2px';
+            });
+        });
+
+        // Create elegant background animations
+        function createElegantBackground() {
+            const container = document.getElementById('animatedBackground');
+            
+            // Create main gradient background
+            const gradient = document.createElement('div');
+            gradient.className = 'background-gradient';
+            container.appendChild(gradient);
+            
+            // Create texture overlay
+            const texture = document.createElement('div');
+            texture.className = 'background-texture';
+            container.appendChild(texture);
+            
+            // Create wave animation
+            const wave = document.createElement('div');
+            wave.className = 'wave-animation';
+            container.appendChild(wave);
+            
+            // Create floating particles
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'floating-particle';
+                
+                // Random size and position
+                const size = 50 + Math.random() * 150;
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const delay = Math.random() * 5;
+                const duration = 15 + Math.random() * 15;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${left}%`;
+                particle.style.top = `${top}%`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                
+                container.appendChild(particle);
+                
+                // Remove particle after animation completes
+                setTimeout(() => {
+                    if (particle.parentNode === container) {
+                        container.removeChild(particle);
+                    }
+                }, (duration + delay) * 1000);
+            }
+            
+            // Create soft lights
+            function createSoftLight() {
+                const light = document.createElement('div');
+                light.className = 'soft-light';
+                
+                // Random size and position
+                const size = 100 + Math.random() * 200;
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const delay = Math.random() * 3;
+                const duration = 8 + Math.random() * 8;
+                
+                light.style.width = `${size}px`;
+                light.style.height = `${size}px`;
+                light.style.left = `${left}%`;
+                light.style.top = `${top}%`;
+                light.style.animationDelay = `${delay}s`;
+                light.style.animationDuration = `${duration}s`;
+                
+                container.appendChild(light);
+                
+                // Remove light after animation completes
+                setTimeout(() => {
+                    if (light.parentNode === container) {
+                        container.removeChild(light);
+                    }
+                }, (duration + delay) * 1000);
+            }
+            
+            // Create initial particles and lights
+            for (let i = 0; i < 5; i++) {
+                setTimeout(createParticle, i * 1000);
+                setTimeout(createSoftLight, i * 1500);
+            }
+            
+            // Continuously create new particles and lights
+            setInterval(createParticle, 3000);
+            setInterval(createSoftLight, 4000);
+        }
+
+        // Ripple effect on click
+        document.addEventListener('click', (e) => {
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple-effect';
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            document.body.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 1000);
+        });
+
+        // Magnetic elements effect
+        document.querySelectorAll('.btn, .about-image, .menu-slider').forEach(element => {
+            element.addEventListener('mousemove', (e) => {
+                const rect = element.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const deltaX = (x - centerX) / centerX * 10;
+                const deltaY = (y - centerY) / centerY * 10;
+                
+                element.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                element.style.transform = 'translate(0, 0)';
+            });
+        });
+
+        // Start all animations after loading
+        function startAllAnimations() {
+            createElegantBackground();
+        }
+
+        // Mobile Menu Toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+
+        // Menu Slider
+        const menuSlides = document.querySelector('.menu-slides');
+        const menuSlideItems = document.querySelectorAll('.menu-slide');
+        const menuDots = document.querySelectorAll('.slider-dot');
+        const prevBtn = document.querySelector('.slider-arrow.prev');
+        const nextBtn = document.querySelector('.slider-arrow.next');
+        let currentMenuSlide = 0;
+
+        function updateMenuSlider() {
+            menuSlides.style.transform = `translateX(-${currentMenuSlide * 100}%)`;
+            
+            // Update dots
+            menuDots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentMenuSlide);
+            });
+        }
+
+        // Next slide
+        nextBtn.addEventListener('click', () => {
+            currentMenuSlide = (currentMenuSlide + 1) % menuSlideItems.length;
+            updateMenuSlider();
+        });
+
+        // Previous slide
+        prevBtn.addEventListener('click', () => {
+            currentMenuSlide = (currentMenuSlide - 1 + menuSlideItems.length) % menuSlideItems.length;
+            updateMenuSlider();
+        });
+
+        // Dot navigation
+        menuDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentMenuSlide = index;
+                updateMenuSlider();
+            });
+        });
+
+        // Auto slide menu
+        setInterval(() => {
+            currentMenuSlide = (currentMenuSlide + 1) % menuSlideItems.length;
+            updateMenuSlider();
+        }, 5000);
+
+        // Form Validation
+        const contactForm = document.getElementById('contactForm');
+        
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+            
+            if (name && email && subject && message) {
+                alert('Terima kasih! Pesan Anda telah berhasil dikirim. Kami akan segera merespons pesan Anda.');
+                contactForm.reset();
+            } else {
+                alert('Harap lengkapi semua field sebelum mengirim pesan.');
+            }
+        });
+
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.style.backgroundColor = 'rgba(255, 248, 225, 0.98)';
+                header.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.1)';
+            } else {
+                header.style.backgroundColor = 'rgba(255, 248, 225, 0.95)';
+                header.style.boxShadow = 'var(--shadow)';
+            }
+        });
+    </script>
+</body>
+</html>
